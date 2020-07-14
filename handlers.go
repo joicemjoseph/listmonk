@@ -83,6 +83,7 @@ func registerHTTPHandlers(e *echo.Echo) {
 	e.DELETE("/api/campaigns/:id", handleDeleteCampaign)
 
 	e.GET("/api/media", handleGetMedia)
+	e.GET("/api/media/:id", handleGetMedium)
 	e.POST("/api/media", handleUploadMedia)
 	e.DELETE("/api/media/:id", handleDeleteMedia)
 

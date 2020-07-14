@@ -197,7 +197,7 @@ export default {
       if (!sel) {
         return;
       }
-      this.$refs.quill.quill.insertEmbed(sel.index, 'image', m.url);
+      this.$refs.quill.quill.insertEmbed(sel.index, 'image', 'data:image/png;base64,'.concat(m.fileEncoded));
     },
   },
 

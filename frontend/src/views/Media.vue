@@ -36,6 +36,12 @@
             <b-button native-type="submit" type="is-primary" icon-left="file-upload-outline"
               :disabled="form.files.length === 0"
               :loading="isProcessing">Upload</b-button>
+            <b-checkbox type="is_primary"
+              :indeterminate="false"
+              v-show="isModal"
+              >
+                Enable Base 64
+            </b-checkbox>
           </div>
         </div>
       </form>

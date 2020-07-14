@@ -662,6 +662,9 @@ INSERT INTO media (uuid, filename, thumb, provider, created_at) VALUES($1, $2, $
 -- name: get-media
 SELECT * FROM media WHERE provider=$1 ORDER BY created_at DESC;
 
+-- name: get-medium
+SELECT * FROM media WHERE provider=$1 and id=$2 ORDER BY created_at DESC limit 1;
+
 -- name: delete-media
 DELETE FROM media WHERE id=$1 RETURNING filename;
 

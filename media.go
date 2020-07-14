@@ -108,6 +108,30 @@ func handleUploadMedia(c echo.Context) error {
 	return c.JSON(http.StatusOK, okResp{true})
 }
 
+func handleGetMedium(c echo.Context) error {
+	var (
+		app   = c.Get("app").(*App)
+		out   media.Media
+		id, _ = strconv.Atoi(c.Param("id"))
+	)
+
+	if id < 1 {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID.")
+	}
+
+	if err := app.queries.GetMedium.QueryRowx(app.constants.MediaProvider, id).StructScan(&out); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError,
+			fmt.Sprintf("Error fetching media list: %s", pqErrMsg(err)))
+	}
+
+	out.URL = app.media.Get(out.Filename)
+	out.File = app.media.GetData(out.Filename)
+	out.ThumbURL = app.media.Get(thumbPrefix + out.Filename)
+	out.Supports = app.media.Supports()
+
+	return c.JSON(http.StatusOK, okResp{out})
+}
+
 // handleGetMedia handles retrieval of uploaded media.
 func handleGetMedia(c echo.Context) error {
 	var (
@@ -115,22 +139,15 @@ func handleGetMedia(c echo.Context) error {
 		out = []media.Media{}
 	)
 
-	b64, _ := strconv.ParseBool(c.QueryParam("base64"))
-
 	if err := app.queries.GetMedia.Select(&out, app.constants.MediaProvider); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError,
 			fmt.Sprintf("Error fetching media list: %s", pqErrMsg(err)))
 	}
 
 	for i := 0; i < len(out); i++ {
-		if b64 {
-			out[i].URL = app.media.GetData(out[i].Filename)
-			out[i].ThumbURL = app.media.GetData(thumbPrefix + out[i].Filename)
-		} else {
-			out[i].URL = app.media.Get(out[i].Filename)
-			out[i].ThumbURL = app.media.Get(thumbPrefix + out[i].Filename)
-		}
-
+		out[i].File = app.media.GetData(out[i].Filename)
+		out[i].ThumbURL = app.media.Get(thumbPrefix + out[i].Filename)
+		out[i].URL = app.media.Get(out[i].Filename)
 		out[i].Supports = app.media.Supports()
 	}
 

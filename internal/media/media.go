@@ -16,6 +16,7 @@ type Media struct {
 	ThumbURL  string    `json:"thumb_url"`
 	Provider  string    `json:"provider"`
 	URL       string    `json:"url"`
+	File      string    `json:"file_encoded"`
 	Supports  []string  `json:"supports"`
 }
 
